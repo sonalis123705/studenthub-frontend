@@ -1,0 +1,87 @@
+
+<button
+  class="mobile-menu-button"
+  type="button"
+  (click)="toggleMenu()"
+  [attr.aria-expanded]="menuOpen()"
+  aria-label="Toggle navigation">
+  ☰
+</button>
+
+@if (menuOpen()) {
+  <button
+    class="sidebar-overlay"
+    type="button"
+    aria-label="Close navigation"
+    (click)="closeMenu()">
+  </button>
+}
+
+<aside class="sidebar" [class.mobile-open]="menuOpen()">
+  <div class="brand">
+    <div class="brand-icon">S</div>
+    <div>
+      <h2>SchoolHub</h2>
+      <p>School Management</p>
+    </div>
+    <button
+      class="close-menu-button"
+      type="button"
+      aria-label="Close menu"
+      (click)="closeMenu()">✕</button>
+  </div>
+
+  <div class="menu-heading">MAIN MENU</div>
+
+  <nav class="menu">
+    <a routerLink="/dashboard"
+       routerLinkActive="active"
+       (click)="closeMenu()">
+      <span class="menu-icon">▦</span>
+      <span>Dashboard</span>
+    </a>
+
+    <a routerLink="/students"
+       routerLinkActive="active"
+       (click)="closeMenu()">
+      <span class="menu-icon">♙</span>
+      <span>Students</span>
+    </a>
+
+    <a routerLink="/teachers"
+       routerLinkActive="active"
+       (click)="closeMenu()">
+      <span class="menu-icon">♧</span>
+      <span>Teachers</span>
+    </a>
+
+    <a routerLink="/classes"
+       routerLinkActive="active"
+       (click)="closeMenu()">
+      <span class="menu-icon">▤</span>
+      <span>Classes</span>
+    </a>
+
+    <a routerLink="/attendance"
+       routerLinkActive="active"
+       (click)="closeMenu()">
+      <span class="menu-icon">✓</span>
+      <span>Attendance</span>
+    </a>
+
+    <a routerLink="/fees"
+       routerLinkActive="active"
+       (click)="closeMenu()">
+      <span class="menu-icon">₹</span>
+      <span>Fee Management</span>
+    </a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="profile-avatar">A</div>
+    <div class="profile-info">
+      <strong>Administrator</strong>
+      <span>School Admin</span>
+    </div>
+  </div>
+</aside>

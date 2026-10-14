@@ -1,0 +1,353 @@
+
+<div class="page-container">
+  <main class="students-content">
+
+    <!-- Topbar -->
+    <header class="topbar">
+      <div class="breadcrumb">Workspace / Students</div>
+      <span class="academic-year">Academic Year 2026–27</span>
+    </header>
+
+    <!-- Page Heading -->
+    <section class="page-heading">
+      <div>
+        <h1>Student Management</h1>
+        <p>Manage student records, enrolments and fee details.</p>
+      </div>
+
+      <button
+        type="button"
+        class="add-btn"
+        (click)="openAddForm()">
+        + Add student
+      </button>
+    </section>
+
+    <!-- Add / Edit Student Form -->
+    @if (showAddForm) {
+      <section class="table-card add-student-form">
+
+        <div class="table-heading">
+          <div>
+            <h2>{{ isEditMode ? 'Edit Student' : 'Add New Student' }}</h2>
+            <p>
+              {{ isEditMode
+                ? 'Update the student details below.'
+                : "Enter the student's details below." }}
+            </p>
+          </div>
+        </div>
+
+        <form
+          #studentForm="ngForm"
+          (ngSubmit)="isEditMode ? updateStudent() : addStudent()"
+          novalidate>
+
+          <div class="form-grid">
+
+            <!-- Student Name -->
+            <div class="form-field">
+              <label for="studentName">Student Name</label>
+
+              <input
+                id="studentName"
+                type="text"
+                name="name"
+                [(ngModel)]="newStudent.name"
+                #name="ngModel"
+                placeholder="Enter student name"
+                required
+                minlength="3"
+                pattern="^[a-zA-Z ]+$" />
+
+              @if (name.invalid && (name.touched || studentForm.submitted)) {
+                <small class="error">
+                  @if (name.errors?.['required']) {
+                    Student name is required.
+                  } @else if (name.errors?.['minlength']) {
+                    Name must contain at least 3 characters.
+                  } @else if (name.errors?.['pattern']) {
+                    Only letters and spaces are allowed.
+                  }
+                </small>
+              }
+            </div>
+
+            <!-- Roll Number -->
+            <div class="form-field">
+              <label for="rollNo">Roll Number</label>
+
+              <input
+                id="rollNo"
+                type="number"
+                name="roll_no"
+                [(ngModel)]="newStudent.roll_no"
+                #rollNo="ngModel"
+                placeholder="Enter roll number"
+                required
+                min="1"
+                step="1" />
+
+              @if (rollNo.invalid && (rollNo.touched || studentForm.submitted)) {
+                <small class="error">
+                  @if (rollNo.errors?.['required']) {
+                    Roll number is required.
+                  } @else if (rollNo.errors?.['min']) {
+                    Roll number must be greater than zero.
+                  } @else if (rollNo.errors?.['step']) {
+                    Enter a whole number.
+                  }
+                </small>
+              }
+            </div>
+
+            <!-- Medium -->
+            <div class="form-field">
+              <label for="medium">Medium</label>
+
+              <select
+                id="medium"
+                name="medium"
+                [(ngModel)]="newStudent.medium"
+                #medium="ngModel"
+                required>
+                <option value="" disabled>Select medium</option>
+                <option value="english">English</option>
+                <option value="hindi">Hindi</option>
+                <option value="marathi">Marathi</option>
+              </select>
+
+              @if (medium.invalid && (medium.touched || studentForm.submitted)) {
+                <small class="error">
+                  Please select a medium.
+                </small>
+              }
+            </div>
+
+            <!-- Fees -->
+            <div class="form-field">
+              <label for="fees">Fees</label>
+
+              <input
+                id="fees"
+                type="number"
+                name="fees"
+                [(ngModel)]="newStudent.fees"
+                #fees="ngModel"
+                placeholder="Enter fees"
+                required
+                min="0"
+                step="0.01" />
+
+              @if (fees.invalid && (fees.touched || studentForm.submitted)) {
+                <small class="error">
+                  @if (fees.errors?.['required']) {
+                    Fees are required.
+                  } @else if (fees.errors?.['min']) {
+                    Fees cannot be negative.
+                  } @else if (fees.errors?.['step']) {
+                    Enter a valid fee amount.
+                  }
+                </small>
+              }
+            </div>
+
+          </div>
+
+          <!-- Form Buttons -->
+          <div class="form-actions">
+            <button
+              type="submit"
+              class="add-btn"
+              [disabled]="studentForm.invalid">
+              {{ isEditMode ? 'Update Student' : 'Save Student' }}
+            </button>
+
+            <button
+              type="button"
+              class="cancel-btn"
+              (click)="resetForm()">
+              Cancel
+            </button>
+          </div>
+
+        </form>
+      </section>
+    }
+
+    <!-- Statistics -->
+    <section class="stats-container">
+
+      <div class="stat-card">
+        <span>Total students</span>
+        <h2>{{ totalstudents }}</h2>
+        <p>Across all classes</p>
+      </div>
+
+      <div class="stat-card">
+        <span>Active students</span>
+        <h2>231</h2>
+        <p>Currently enrolled</p>
+      </div>
+
+      <div class="stat-card">
+        <span>Fees collected</span>
+        <h2>₹{{ totalFees }}</h2>
+        <p>Sample collection summary</p>
+      </div>
+
+    </section>
+
+    <!-- Student Records -->
+    <section class="table-card">
+
+      <div class="table-heading">
+        <div>
+          <h2>Student records</h2>
+          <p>A list of students registered in the school.</p>
+        </div>
+
+        <span class="record-count">
+          {{ filteredStudents.length }} records
+        </span>
+      </div>
+
+      <!-- Search and Filters -->
+      <div class="toolbar">
+
+        <input
+          type="text"
+          name="searchName"
+          placeholder="Search by student name..."
+          [(ngModel)]="searchName"
+          (ngModelChange)="resetPage()" />
+
+        <select
+          name="selectedMedium"
+          [(ngModel)]="selectedMedium"
+          (ngModelChange)="resetPage()">
+          <option value="All">All mediums</option>
+          <option value="english">English</option>
+          <option value="hindi">Hindi</option>
+          <option value="marathi">Marathi</option>
+        </select>
+
+        <button
+          type="button"
+          class="cancel-btn"
+          (click)="clearFilters()">
+          Clear filters
+        </button>
+
+      </div>
+
+      <!-- Student Table -->
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th>Student</th>
+              <th>Roll no.</th>
+              <th>Medium</th>
+              <th>Fees</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            @for (student of paginatedStudents; track student.id) {
+              <tr>
+                <td>
+                  <div class="student-info">
+                    <strong>{{ student.name }}</strong>
+                    <small>Student ID: {{ student.id }}</small>
+                  </div>
+                </td>
+
+                <td>{{ student.roll_no }}</td>
+                <td>{{ student.medium || 'Not specified' }}</td>
+                <td>{{ student.fees | currency:'INR':'symbol':'1.0-2' }}</td>
+                <td>{{ student.status || 'Not specified' }}</td>
+
+                <td>
+                  <button
+                    type="button"
+                    class="edit-btn"
+                    (click)="editStudent(student)">
+                    Edit
+                  </button>
+
+                  <button
+                    type="button"
+                    class="delete-btn"
+                    (click)="deleteStudent(student.id)">
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="6">No matching students found.</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Functional Pagination -->
+      <div class="pagination">
+        <span>
+          Showing
+          {{
+            filteredStudents.length === 0
+              ? 0
+              : (currentPage - 1) * pageSize + 1
+          }}
+          -
+          {{
+            Math.min(
+              currentPage * pageSize,
+              filteredStudents.length
+            )
+          }}
+          of {{ filteredStudents.length }} students
+        </span>
+
+        <div class="page-controls">
+
+          <button
+            type="button"
+            [disabled]="currentPage === 1"
+            (click)="changePage(currentPage - 1)">
+            Previous
+          </button>
+
+          @for (page of pages; track page) {
+            <button
+              type="button"
+              [class.current-page]="currentPage === page"
+              (click)="changePage(page)">
+              {{ page }}
+            </button>
+          }
+
+          <button
+            type="button"
+            [disabled]="currentPage >= totalPages || totalPages === 0"
+            (click)="changePage(currentPage + 1)">
+            Next
+          </button>
+
+        </div>
+      </div>
+
+    </section>
+
+    <!-- Footer -->
+    <footer class="page-footer">
+      StudentHub · School Administration System
+    </footer>
+
+  </main>
+</div>

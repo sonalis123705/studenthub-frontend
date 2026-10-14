@@ -1,0 +1,78 @@
+
+<div class="dashboard-container">
+
+  <div class="page-heading">
+    <div>
+      <h1>Dashboard</h1>
+      <p>Welcome back! Here's what's happening at your school.</p>
+    </div>
+    <span class="academic-year">Academic Year 2026–27</span>
+  </div>
+
+  <div class="stats-grid">
+
+    <div class="stat-card students-card">
+      <div class="stat-icon">👨‍🎓</div>
+      <p>Total Students</p>
+      <h2>{{dashboardres.totalStudents}}</h2>
+      <span>Currently enrolled</span>
+    </div>
+
+    <div class="stat-card fees-card">
+      <div class="stat-icon">₹</div>
+      <p>Total Fees Recorded</p>
+      <h2>₹{{dashboardres.totalFees}}</h2>
+      <span>Based on student records</span>
+    </div>
+
+    <div class="stat-card classes-card">
+      <div class="stat-icon">📚</div>
+      <p>Total Classes</p>
+      <h2>{{dashboardres.totalClasses}}</h2>
+      <span>Distinct classes</span>
+    </div>
+
+  </div>
+
+  <section class="recent-section">
+    <div class="section-heading">
+      <div>
+        <h2>Recent Students</h2>
+        <p>Latest student records</p>
+      </div>
+    </div>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Student Name</th>
+            <th>Roll Number</th>
+            <th>Class</th>
+            <th>Medium</th>
+            <th>Fees</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          @for (student of recentStudents; track student.roll_no) {
+            <tr>
+              <td>{{ student.name }}</td>
+              <td>{{ student.roll_no }}</td>
+              <td>{{ student.class }}</td>
+              <td>{{ student.medium }}</td>
+              <td>₹{{ student.fees }}</td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="5" class="empty-message">
+                No student records available.
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+</div>
